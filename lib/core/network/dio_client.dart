@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class DioClient {
   final Dio _dio;
 
-  DioClient()
+  DioClient({required String apiKey})
       : _dio = Dio(
           BaseOptions(
             baseUrl: "https://reqres.in/api/", // ReqRes base URL
@@ -11,6 +11,7 @@ class DioClient {
             receiveTimeout: const Duration(seconds: 5),
             headers: {
               "Content-Type": "application/json",
+              "x-api-key": "reqres-free-v1", // Add your API key here
             },
           ),
         ) {
