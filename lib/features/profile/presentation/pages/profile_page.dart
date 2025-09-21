@@ -11,31 +11,49 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : provider.profile == null
-              ? const Center(child: Text('No Profile Found'))
-              : Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: NetworkImage(provider.profile!.avatar),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(provider.profile!.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                      Text(provider.profile!.email),
-                      const SizedBox(height: 40),
-                      ElevatedButton(
-                        onPressed: () {
-                          provider.logout();
-                        },
-                        child: const Text('Logout'),
-                      )
-                    ],
-                  ),
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Builder(builder: (context) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.errorMessage != null) {
+            return Center(child: Text(provider.errorMessage!));
+          }
+
+          if (provider.profile == null) {
+            return const Center(child: Text('No Profile Found'));
+          }
+
+          final profile = provider.profile!;
+
+          return Column(
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(profile.avatar),
+                onBackgroundImageError: (_, __) {},
+                child: profile.avatar.isEmpty
+                    ? const Icon(Icons.person, size: 50)
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              Text(profile.name,
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold)),
+              Text(profile.email),
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: () {
+                  provider.logout();
+                },
+                child: const Text('Logout'),
+              ),
+            ],
+          );
+        }),
+      ),
     );
   }
 }

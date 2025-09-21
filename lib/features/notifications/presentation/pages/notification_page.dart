@@ -14,7 +14,10 @@ class NotificationPage extends StatelessWidget {
       body: Center(
         child: provider.initialized
             ? const Text('Notifications initialized!')
-            : const CircularProgressIndicator(),
+            : ElevatedButton(
+                onPressed: () => provider.initialize(),
+                child: const Text("Init Notifications"),
+              ),
       ),
     );
   }

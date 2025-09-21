@@ -10,7 +10,7 @@ class NotificationProvider extends ChangeNotifier {
   bool get initialized => _initialized;
 
   Future<void> initialize() async {
-    await initNotifications();
+    await initNotifications(); // usecase call
     _initialized = true;
     notifyListeners();
   }

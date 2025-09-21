@@ -1,21 +1,12 @@
-import '../../data/datasources/google_auth_service.dart';
 import '../entities/user.dart';
+import '../repositories/auth_repository.dart';
 
 class SignIn {
-  final GoogleAuthService authService;
+  final AuthRepository repository;
 
-  SignIn(this.authService);
+  SignIn(this.repository);
 
   Future<User?> call() async {
-    final account = await authService.signIn();
-    if (account != null) {
-      return User(
-        id: account.id,
-        name: account.displayName ?? '',
-        email: account.email,
-        photoUrl: account.photoUrl ?? '',
-      );
-    }
-    return null;
+    return await repository.signIn();
   }
 }

@@ -8,6 +8,7 @@ class ProfileModel extends Profile {
     required String avatar,
   }) : super(id: id, name: name, email: email, avatar: avatar);
 
+  // Convert from Map (from Sqflite)
   factory ProfileModel.fromMap(Map<String, dynamic> map) {
     return ProfileModel(
       id: map['id'],
@@ -16,7 +17,7 @@ class ProfileModel extends Profile {
       avatar: map['avatar'],
     );
   }
-
+// Convert to Map (for Sqflite)
   Map<String, dynamic> toMap() {
     return {
       'id': id,

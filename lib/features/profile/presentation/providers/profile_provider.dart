@@ -9,6 +9,7 @@ class ProfileProvider extends ChangeNotifier {
 
   Profile? _profile;
   bool _isLoading = false;
+  String? _errorMessage;
 
   ProfileProvider({
     required this.getProfileUsecase,
@@ -17,25 +18,38 @@ class ProfileProvider extends ChangeNotifier {
 
   Profile? get profile => _profile;
   bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
   Future<void> loadProfile() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
-    _profile = await getProfileUsecase();
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _profile = await getProfileUsecase();
+    } catch (e) {
+      _errorMessage = 'Failed to load profile';
+      _profile = null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> saveProfile(Profile profile) async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
-    await saveProfileUsecase(profile);
-    _profile = profile;
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      await saveProfileUsecase(profile);
+      _profile = profile;
+    } catch (e) {
+      _errorMessage = 'Failed to save profile';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> logout() async {

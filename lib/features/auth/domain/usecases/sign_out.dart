@@ -1,11 +1,11 @@
-import '../../data/datasources/google_auth_service.dart';
+import '../repositories/auth_repository.dart';
 
 class SignOut {
-  final GoogleAuthService authService;
+  final AuthRepository repository;
 
-  SignOut(this.authService);
+  SignOut(this.repository);
 
   Future<void> call() async {
-    await authService.signOut();
+    await repository.signOut();
   }
 }

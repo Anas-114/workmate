@@ -1,7 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:workmate/features/profile/data/models/profile_repository.dart';
- 
 
 class LocalDbService {
   static final LocalDbService _instance = LocalDbService._internal();
@@ -33,29 +32,46 @@ class LocalDbService {
           )
         ''');
       },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        // Handle future migrations here
+        // Example:
+        // if (oldVersion < 2) { await db.execute("ALTER TABLE profile ADD COLUMN phone TEXT"); }
+      },
     );
   }
 
   Future<void> saveProfile(ProfileModel profile) async {
     final db = await database;
-    await db.insert(
-      'profile',
-      profile.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    try {
+      await db.insert(
+        'profile',
+        profile.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      throw Exception("Failed to save profile: $e");
+    }
   }
 
   Future<ProfileModel?> getProfile() async {
     final db = await database;
-    final result = await db.query('profile', limit: 1);
-    if (result.isNotEmpty) {
-      return ProfileModel.fromMap(result.first);
+    try {
+      final result = await db.query('profile', limit: 1);
+      if (result.isNotEmpty) {
+        return ProfileModel.fromMap(result.first);
+      }
+      return null;
+    } catch (e) {
+      throw Exception("Failed to fetch profile: $e");
     }
-    return null;
   }
 
   Future<void> deleteProfile() async {
     final db = await database;
-    await db.delete('profile');
+    try {
+      await db.delete('profile');
+    } catch (e) {
+      throw Exception("Failed to delete profile: $e");
+    }
   }
 }

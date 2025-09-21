@@ -1,12 +1,12 @@
-import '../../data/datasources/local_db_service.dart';
 import '../entities/profile.dart';
+import '../repositories/profile_repository.dart';
 
 class GetProfile {
-  final LocalDbService localDb;
+  final ProfileRepository repository;
 
-  GetProfile(this.localDb);
+  GetProfile(this.repository);
 
   Future<Profile?> call() async {
-    return await localDb.getProfile();
+    return await repository.getProfile();
   }
 }
