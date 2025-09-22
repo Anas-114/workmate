@@ -1,49 +1,147 @@
+// import 'dart:developer';
+
+// import 'package:firebase_auth/firebase_auth.dart' as firebase;
+// import 'package:workmate/features/auth/data/datasources/google_auth_service.dart';
+// import '../models/user_model.dart';
+// import '../../domain/entities/user.dart';
+// import '../../domain/repositories/auth_repository.dart';
+
+// class AuthRepositoryImpl implements AuthRepository {
+//   final GoogleAuthService _googleAuthService;
+
+//   AuthRepositoryImpl(this._googleAuthService);
+
+//   @override
+//   Future<User> signIn({bool checkOnly = false}) async {
+//     try {
+//       log("AuthRepositoryImpl: signIn called | checkOnly = $checkOnly");
+
+//       if (checkOnly) {
+//         final firebase.User? current = _googleAuthService.getCurrentUser();
+//         log("AuthRepositoryImpl: current user = $current");
+
+//         if (current != null) {
+//           final userModel = UserModel.fromFirebaseUser(current);
+//           log("AuthRepositoryImpl: returning user from cache → ${userModel.id}");
+//           return userModel;
+//         }
+//         throw Exception("No user logged in");
+//       }
+
+//       log("AuthRepositoryImpl: performing Google sign-in...");
+//       final credential = await _googleAuthService.signIn();
+
+//       final firebase.User? firebaseUser = credential?.user;
+//       log("AuthRepositoryImpl: Firebase sign-in returned user = $firebaseUser");
+
+//       if (firebaseUser == null) {
+//         throw Exception("No user returned from sign-in");
+//       }
+
+//       final userModel = UserModel.fromFirebaseUser(firebaseUser);
+//       log("AuthRepositoryImpl: returning signed-in user → ${userModel.id}");
+//       return userModel;
+//     } catch (e) {
+//       log("AuthRepositoryImpl: signIn error → $e");
+//       throw Exception("Firebase sign-in failed: $e");
+//     }
+//   }
+
+//   @override
+//   Future<void> signOut() async {
+//     log("AuthRepositoryImpl: signOut called");
+//     await _googleAuthService.signOut();
+//     log("AuthRepositoryImpl: user signed out successfully");
+//   }
+
+//   @override
+//   Future<User?> getCurrentUser() async {
+//     log("AuthRepositoryImpl: getCurrentUser called");
+
+//     final current = _googleAuthService.getCurrentUser();
+//     log("AuthRepositoryImpl: Firebase current user = $current");
+
+//     if (current != null) {
+//       final userModel = UserModel.fromFirebaseUser(current);
+//       log("AuthRepositoryImpl: returning mapped user → ${userModel.id}");
+//       return userModel;
+//     }
+
+//     log("AuthRepositoryImpl: no user found");
+//     return null;
+//   }
+// }
+
+
+import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:workmate/features/auth/data/datasources/google_auth_service.dart';
+import '../models/user_model.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../datasources/google_auth_service.dart';
-import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final GoogleAuthService _googleAuthService;
 
   AuthRepositoryImpl(this._googleAuthService);
 
-  /// Sign in the user using Google
   @override
-  Future<User> signIn() async {
+  Future<User?> signIn({bool checkOnly = false}) async {
     try {
-      final account = await _googleAuthService.signIn();
-      if (account != null) {
-        return UserModel.fromGoogleAccount(account);
-      } else {
-        throw Exception('Google Sign-In returned null');
+      log("AuthRepositoryImpl: signIn called | checkOnly = $checkOnly");
+
+      if (checkOnly) {
+        final firebase.User? current = _googleAuthService.getCurrentUser();
+        log("AuthRepositoryImpl: current user = $current");
+
+        if (current != null) {
+          final userModel = UserModel.fromFirebaseUser(current);
+          log("AuthRepositoryImpl: returning user from cache → ${userModel.id}");
+          return userModel;
+        }
+        return null; // Return null instead of throwing an exception
       }
+
+      log("AuthRepositoryImpl: performing Google sign-in...");
+      final credential = await _googleAuthService.signIn();
+
+      final firebase.User? firebaseUser = credential?.user;
+      log("AuthRepositoryImpl: Firebase sign-in returned user = $firebaseUser");
+
+      if (firebaseUser == null) {
+        return null;
+      }
+
+      final userModel = UserModel.fromFirebaseUser(firebaseUser);
+      log("AuthRepositoryImpl: returning signed-in user → ${userModel.id}");
+      return userModel;
     } catch (e) {
-      throw Exception('Google Sign-In failed: $e');
+      log("AuthRepositoryImpl: signIn error → $e");
+      throw Exception("Firebase sign-in failed: $e");
     }
   }
 
-  /// Sign out the currently logged-in user
   @override
   Future<void> signOut() async {
-    try {
-      await _googleAuthService.signOut();
-    } catch (e) {
-      throw Exception('Google Sign-Out failed: $e');
-    }
+    log("AuthRepositoryImpl: signOut called");
+    await _googleAuthService.signOut();
+    log("AuthRepositoryImpl: user signed out successfully");
   }
 
-  /// Get the currently signed-in user (if any)
   @override
   Future<User?> getCurrentUser() async {
-    try {
-      final account = await _googleAuthService.getCurrentUser();
-      if (account != null) {
-        return UserModel.fromGoogleAccount(account);
-      }
-      return null;
-    } catch (e) {
-      return null;
+    log("AuthRepositoryImpl: getCurrentUser called");
+
+    final current = _googleAuthService.getCurrentUser();
+    log("AuthRepositoryImpl: Firebase current user = $current");
+
+    if (current != null) {
+      final userModel = UserModel.fromFirebaseUser(current);
+      log("AuthRepositoryImpl: returning mapped user → ${userModel.id}");
+      return userModel;
     }
+
+    log("AuthRepositoryImpl: no user found");
+    return null;
   }
 }

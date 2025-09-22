@@ -1,25 +1,42 @@
-///// optional
-///
-///
+// import 'package:firebase_auth/firebase_auth.dart' as firebase;
+// import '../../domain/entities/user.dart';
+
+// class UserModel extends User {
+//   UserModel({
+//     required super.id,
+//     required super.name,
+//     required super.email,
+//     super.photoUrl,
+//   });
+
+//   factory UserModel.fromFirebaseUser(firebase.User user) {
+//     return UserModel(
+//       id: user.uid,
+//       name: user.displayName ?? '',
+//       email: user.email ?? '',
+//       photoUrl: user.photoURL,
+//     );
+//   }
+// }
+
+
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import '../../domain/entities/user.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class UserModel extends User {
   UserModel({
     required super.id,
     required super.name,
     required super.email,
-    String? photoUrl, // optional
-  }) : super(
-          photoUrl: photoUrl, // pass to the super constructor
-        );
+    super.photoUrl,
+  });
 
-  factory UserModel.fromGoogleAccount(GoogleSignInAccount account) {
+  factory UserModel.fromFirebaseUser(firebase.User user) {
     return UserModel(
-      id: account.id,
-      name: account.displayName ?? '',
-      email: account.email,
-      photoUrl: account.photoUrl, // Google might return null
+      id: user.uid,
+      name: user.displayName ?? '',
+      email: user.email ?? '',
+      photoUrl: user.photoURL,
     );
   }
 }

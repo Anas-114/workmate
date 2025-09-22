@@ -43,6 +43,8 @@ class UserRemoteDataSource {
       } else {
         throw ServerFailure('Server returned ${response.statusCode}');
       }
+    } on DioException catch (e) {
+       throw ServerFailure('Failed to create user: ${e.message}');
     } catch (e) {
       throw ServerFailure('Failed to create user: $e');
     }
@@ -61,6 +63,8 @@ class UserRemoteDataSource {
       } else {
         throw ServerFailure('Server returned ${response.statusCode}');
       }
+    } on DioException catch (e) {
+      throw ServerFailure('Failed to update user: ${e.message}');
     } catch (e) {
       throw ServerFailure('Failed to update user: $e');
     }
@@ -74,6 +78,8 @@ class UserRemoteDataSource {
       if (response.statusCode != 204) {
         throw ServerFailure('Server returned ${response.statusCode}');
       }
+    } on DioException catch (e) {
+      throw ServerFailure('Failed to delete user: ${e.message}');
     } catch (e) {
       throw ServerFailure('Failed to delete user: $e');
     }

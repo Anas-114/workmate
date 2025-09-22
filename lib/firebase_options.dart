@@ -64,6 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '920461569916',
     projectId: 'workmate-app-ff26d',
     storageBucket: 'workmate-app-ff26d.firebasestorage.app',
+    androidClientId: '920461569916-2sm7t81kt16ra62ic81gothfbnb860gp.apps.googleusercontent.com',
+    iosClientId: '920461569916-e69ku7hk8s0v6h5h2ejoj7t4asrmr1q4.apps.googleusercontent.com',
     iosBundleId: 'com.example.workmate',
   );
 
@@ -73,6 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '920461569916',
     projectId: 'workmate-app-ff26d',
     storageBucket: 'workmate-app-ff26d.firebasestorage.app',
+    androidClientId: '920461569916-2sm7t81kt16ra62ic81gothfbnb860gp.apps.googleusercontent.com',
+    iosClientId: '920461569916-e69ku7hk8s0v6h5h2ejoj7t4asrmr1q4.apps.googleusercontent.com',
     iosBundleId: 'com.example.workmate',
   );
 
@@ -85,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'workmate-app-ff26d.firebasestorage.app',
     measurementId: 'G-BGSP2YC0BB',
   );
+
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workmate/core/utils/constants.dart';
 import 'package:workmate/features/users/presentation/pages/user_from_page.dart';
+ 
 import '../providers/user_provider.dart';
 
 class UsersPage extends StatefulWidget {
@@ -39,23 +40,25 @@ class _UsersPageState extends State<UsersPage> {
                       ),
                       title: Text(user.name),
                       subtitle: Text(user.email),
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        await Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => UserFormPage(user: user),
-                          ),
+                          MaterialPageRoute(builder: (_) => UserFormPage(user: user)),
                         );
+                        // Refresh the list after returning
+                        provider.fetchUsers();
                       },
                     );
                   },
                 ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const UserFormPage()),
           );
+          // Refresh the list after returning
+          provider.fetchUsers();
         },
         child: const Icon(Icons.add),
       ),

@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:workmate/features/users/presentation/pages/user_from_page.dart';
 import '../providers/user_provider.dart';
 import '../../domain/entities/user.dart';
- 
 
 class UserDetailPage extends StatelessWidget {
   final User user;
@@ -44,13 +43,15 @@ class UserDetailPage extends StatelessWidget {
               children: [
                 // Edit button
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => UserFormPage(user: user),
                       ),
                     );
+                    // Refresh the user list after returning from the edit page
+                    provider.fetchUsers();
                   },
                   child: const Text('Edit'),
                 ),
@@ -59,7 +60,9 @@ class UserDetailPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     await provider.removeUser(user.id);
+                    // Return to the previous page
                     Navigator.pop(context);
+                    // The UsersPage will refresh automatically if you implemented the fix there.
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text('Delete'),

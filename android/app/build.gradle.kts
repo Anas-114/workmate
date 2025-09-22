@@ -1,17 +1,22 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("org.jetbrains.kotlin.android") // correct plugin id for Kotlin DSL
     id("dev.flutter.flutter-gradle-plugin")
-    
-    // Add this line for Firebase
-    id("com.google.gms.google-services")
+    id("com.google.gms.google-services") // Firebase plugin
 }
 
 android {
     namespace = "com.example.workmate"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 35   // was 34
+    ndkVersion ="27.0.12077973"
+     
+    defaultConfig {
+        applicationId = "com.example.workmate"
+        minSdk = 24
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -19,24 +24,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-
-    defaultConfig {
-        applicationId = "com.example.workmate"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-    }
-
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("debug")
-        }
+        jvmTarget = "11"
     }
 }
 
-flutter {
-    source = "../.."
-}

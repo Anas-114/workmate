@@ -10,37 +10,21 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<List<User>> getUsers({int page = 1}) async {
-    try {
-      return await remoteDataSource.getUsers(page: page);
-    } on Failure catch (f) {
-      throw f; // propagate Failure
-    }
+    return await remoteDataSource.getUsers(page: page);
   }
 
   @override
   Future<User> createUser({required String name, required String job}) async {
-    try {
-      return await remoteDataSource.createUser(name, job);
-    } on Failure catch (f) {
-      throw f;
-    }
+    return await remoteDataSource.createUser(name, job);
   }
 
   @override
   Future<User> updateUser({required int id, required String name, required String job}) async {
-    try {
-      return await remoteDataSource.updateUser(id, name, job);
-    } on Failure catch (f) {
-      throw f;
-    }
+    return await remoteDataSource.updateUser(id, name, job);
   }
 
   @override
   Future<void> deleteUser({required int id}) async {
-    try {
-      await remoteDataSource.deleteUser(id);
-    } on Failure catch (f) {
-      throw f;
-    }
+    await remoteDataSource.deleteUser(id);
   }
 }

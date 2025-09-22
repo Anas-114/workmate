@@ -1,34 +1,64 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleAuthService {
-  final GoogleSignIn _googleSignIn = GoogleSignIn.standard();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// Sign in user with Google
-  Future<GoogleSignInAccount?> signIn() async {
+  // Pass your server client ID here
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    
+    serverClientId: "920461569916-89f6r6adpjle4dcsbb8sbbhmc0cs4dcr.apps.googleusercontent.com",
+  );
+
+  /// Sign in with Google
+  Future<UserCredential?> signIn() async {
     try {
-      final account = await _googleSignIn.signIn();
-      return account;
-    } catch (e) {
-      throw Exception('Google Sign-In failed: $e');
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        log("Google sign-in aborted by user.");
+        return null;
+      }
+
+      final googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential = await _auth.signInWithCredential(credential);
+      log("Google sign-in successful: ${userCredential.user?.email}");
+      return userCredential;
+    } catch (e, stackTrace) {
+      log("Error during Google sign-in: $e");
+      log("Stack trace: $stackTrace");
+      return null;
     }
   }
 
-  /// Sign out user
+  /// Sign out from Firebase and Google
   Future<void> signOut() async {
     try {
-      await _googleSignIn.disconnect();
+      await _auth.signOut();
       await _googleSignIn.signOut();
-    } catch (e) {
-      throw Exception('Google Sign-Out failed: $e');
+      log("Signed out successfully.");
+    } catch (e, stackTrace) {
+      log("Error during sign-out: $e");
+      log("Stack trace: $stackTrace");
     }
   }
 
-  /// Get currently signed-in user
-  Future<GoogleSignInAccount?> getCurrentUser() async {
+  /// Get current signed-in user
+  User? getCurrentUser() {
     try {
-      final account = await _googleSignIn.signInSilently();
-      return account;
-    } catch (e) {
+      final user = _auth.currentUser;
+      log("Current user: ${user?.email ?? 'No user signed in'}");
+      return user;
+    } catch (e, stackTrace) {
+      log("Error getting current user: $e");
+      log("Stack trace: $stackTrace");
       return null;
     }
   }

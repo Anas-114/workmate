@@ -19,8 +19,9 @@ class _UserFormPageState extends State<UserFormPage> {
   @override
   void initState() {
     super.initState();
+    // Corrected initialization to pre-fill the form
     name = widget.user?.name ?? '';
-    job = '';
+    job = widget.user?.job ?? ''; // Corrected this line
   }
 
   @override
