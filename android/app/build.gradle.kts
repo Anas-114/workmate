@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.workmate"
-    compileSdk = 35   // was 34
+    compileSdk = 36   // was 34
     ndkVersion ="27.0.12077973"
      
     defaultConfig {

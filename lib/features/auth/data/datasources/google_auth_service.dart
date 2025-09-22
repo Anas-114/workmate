@@ -1,36 +1,110 @@
-import 'dart:developer';
+// import 'dart:developer';
 
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
+
+// class GoogleAuthService {
+//   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+//   // Pass your server client ID here
+//   final GoogleSignIn _googleSignIn = GoogleSignIn(
+    
+//     serverClientId: "920461569916-89f6r6adpjle4dcsbb8sbbhmc0cs4dcr.apps.googleusercontent.com",
+//   );
+
+//   /// Sign in with Google
+//   Future<UserCredential?> signIn() async {
+//     try {
+//       final googleUser = await _googleSignIn.signIn();
+//       if (googleUser == null) {
+//         log("Google sign-in aborted by user.");
+//         return null;
+//       }
+
+//       final googleAuth = await googleUser.authentication;
+
+//       final credential = GoogleAuthProvider.credential(
+//         accessToken: googleAuth.accessToken,
+//         idToken: googleAuth.idToken,
+//       );
+
+//       final userCredential = await _auth.signInWithCredential(credential);
+//       log("Google sign-in successful: ${userCredential.user?.email}");
+//       return userCredential;
+//     } catch (e, stackTrace) {
+//       log("Error during Google sign-in: $e");
+//       log("Stack trace: $stackTrace");
+//       return null;
+//     }
+//   }
+
+//   /// Sign out from Firebase and Google
+//   Future<void> signOut() async {
+//     try {
+//       await _auth.signOut();
+//       await _googleSignIn.signOut();
+//       log("Signed out successfully.");
+//     } catch (e, stackTrace) {
+//       log("Error during sign-out: $e");
+//       log("Stack trace: $stackTrace");
+//     }
+//   }
+
+//   /// Get current signed-in user
+//   User? getCurrentUser() {
+//     try {
+//       final user = _auth.currentUser;
+//       log("Current user: ${user?.email ?? 'No user signed in'}");
+//       return user;
+//     } catch (e, stackTrace) {
+//       log("Error getting current user: $e");
+//       log("Stack trace: $stackTrace");
+//       return null;
+//     }
+//   }
+// }
+
+
+
+// google_auth_service.dart
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // Pass your server client ID here
+  
+  // It's often sufficient to initialize without a serverClientId for standard mobile apps.
+  // The plugin uses the default configuration from your google-services.json/GoogleService-Info.plist.
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    
-    serverClientId: "920461569916-89f6r6adpjle4dcsbb8sbbhmc0cs4dcr.apps.googleusercontent.com",
+    // Only specify if you need explicit control, e.g., for a web app or backend integration.
+    // serverClientId: "your_web_app_client_id.apps.googleusercontent.com", 
   );
 
   /// Sign in with Google
-  Future<UserCredential?> signIn() async {
+  Future<UserCredential?> signInWithGoogle() async {
     try {
-      final googleUser = await _googleSignIn.signIn();
+      // Use the standard signIn method :cite[2]:cite[4]
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         log("Google sign-in aborted by user.");
         return null;
       }
 
-      final googleAuth = await googleUser.authentication;
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      final credential = GoogleAuthProvider.credential(
+      // Create a new credential using both accessToken and idToken :cite[2]
+      final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final userCredential = await _auth.signInWithCredential(credential);
+      // Once signed in, return the UserCredential
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
       log("Google sign-in successful: ${userCredential.user?.email}");
       return userCredential;
+
     } catch (e, stackTrace) {
       log("Error during Google sign-in: $e");
       log("Stack trace: $stackTrace");
@@ -42,24 +116,18 @@ class GoogleAuthService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-      await _googleSignIn.signOut();
+      await _googleSignIn.signOut(); // Signs out from the Google account
       log("Signed out successfully.");
     } catch (e, stackTrace) {
       log("Error during sign-out: $e");
       log("Stack trace: $stackTrace");
+      // Consider re-throwing the error so the caller knows it failed.
+      // rethrow;
     }
   }
 
-  /// Get current signed-in user
+  /// Get current signed-in user. This is a synchronous operation.
   User? getCurrentUser() {
-    try {
-      final user = _auth.currentUser;
-      log("Current user: ${user?.email ?? 'No user signed in'}");
-      return user;
-    } catch (e, stackTrace) {
-      log("Error getting current user: $e");
-      log("Stack trace: $stackTrace");
-      return null;
-    }
+    return _auth.currentUser;
   }
 }
