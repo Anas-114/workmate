@@ -1,7 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workmate/features/notifications/data/datasources/push_service.dart';
 import 'package:workmate/features/users/domain/usecases/get_user.dart';
+import 'package:workmate/firebase_options.dart';
 
 // Providers
 import 'features/auth/presentation/providers/auth_provider.dart';
@@ -31,10 +33,18 @@ import 'core/network/dio_client.dart';
 
 // Pages
 import 'features/auth/presentation/pages/login_page.dart';
-import 'features/profile/presentation/pages/profile_page.dart';
 import 'features/users/presentation/pages/users_page.dart';
 
-void main() {
+void main() async{
+
+ WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+
   // Initialize services
   final googleAuthService = GoogleAuthService();
   final localDb = LocalDbService();
@@ -94,25 +104,41 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late Future<void> _authInit;
+
+  @override
+  void initState() {
+    super.initState();
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    // Delay login until after the first frame
+    _authInit = Future.microtask(() async {
+      if (authProvider.user == null) {
+        await authProvider.login();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return MaterialApp(
       title: 'Workmate',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: FutureBuilder(
-        future: authProvider.user != null
-            ? Future.value(true)
-            : authProvider.login(), // Try to auto-login or check auth state
+        future: _authInit,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting || authProvider.isLoading) {
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );
